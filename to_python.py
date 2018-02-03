@@ -198,42 +198,146 @@ while True:
                 if isinstance(op, tuple):
                     code += '{t}mem.set(%s, %s)\n' % (op[1], op[0])
                 elif isinstance(op, int):
-                    code += '{t}mem.set(%s, stack[-1])\n' % op
-                    code += '{t}del stack[-1]\n'
+                    if stack_min:
+                        code += '{t}mem.set(%s, stack[-1])\n' % op
+                        code += '{t}del stack[-1]\n'
+                    else:
+                        code += '{t}if stack:\n'
+                        code += '{t}    mem.set(%s, stack[-1])\n' % op
+                        code += '{t}    del stack[-1]\n'
+                        code += '{t}else:\n'
+                        code += '{t}    mem.set(%s, 17)\n' % op
                 else:
-                    code += '{t}mem.set(stack[-1], stack[-2])\n'
-                    code += '{t}del stack[-2:]\n'
+                    if stack_min >= 2:
+                        code += '{t}mem.set(stack[-1], stack[-2])\n'
+                        code += '{t}del stack[-2:]\n'
+                    elif stack_min:
+                        code += '{t}if len(stack) >= 2:\n'
+                        code += '{t}    mem.set(stack[-1], stack[-2])\n'
+                        code += '{t}    del stack[-2:]\n'
+                        code += '{t}else:\n'
+                        code += '{t}    mem.set(stack[-1], 17)\n'
+                        code += '{t}    del stack[-1:]\n'
+                    else:
+                        code += '{t}if len(stack) >= 2:\n'
+                        code += '{t}    mem.set(stack[-1], stack[-2])\n'
+                        code += '{t}    del stack[-2:]\n'
+                        code += '{t}elif stack:\n'
+                        code += '{t}    mem.set(stack[-1], 17)\n'
+                        code += '{t}    del stack[-1:]\n'
+                        code += '{t}else:'
+                        code += '{t}    mem.set(17, 17)\n'
             elif op_type == 'LOAD':
                 if isinstance(op, int):
                     code += '{t}stack.append(mem.get(%s))\n' % op
                 else:
-                    code += '{t}stack.append(mem.get(stack.pop(-1)))\n'
+                    if stack_min:
+                        code += '{t}stack.append(mem.get(stack.pop(-1)))\n'
+                    else:
+                        code += '{t}if stack:\n'
+                        code += '{t}    stack.append(mem.get(stack.pop(-1)))\n'
+                        code += '{t}else:\n'
+                        code += '{t}    stack.append(mem.get(17))\n'
+                        
             elif op_type == 'DUP':
                 if isinstance(op, int):
                     code += '{t}stack.append(%s)' % op
                 else:
-                    code += '{t}stack.append(stack[-1])'
+                    if stack_min:
+                        code += '{t}stack.append(stack[-1])'
+                    else:
+                        code += '{t}if stack:\n'
+                        code += '{t}    stack.append(stack[-1])\n'
+                        code += '{t}else:\n'
+                        code += '{t}    stack.append(17)\n'
             elif op_type == 'EQ':
-                code += '{t}now = 1 if stack[-2] == stack[-1] else 0\n'
-                code += '{t}del stack[-2:]\n'
-                code += '{t}stack.append(now)\n'
-            elif op_type == 'NTEQ':
-                code += '{t}now = 1 if stack[-2] != stack[-1] else 0\n'
-                code += '{t}del stack[-2:]\n'
-                code += '{t}stack.append(now)\n'
+                if stack_min >= 2:
+                    code += '{t}now = int(stack[-2] == stack[-1])\n'
+                    code += '{t}del stack[-2:]\n'
+                    code += '{t}stack.append(now)\n'
+                elif stack_min:
+                    code += '{t}if len(stack) >= 2:\n'
+                    code += '{t}    now = int(stack[-2] == stack[-1])\n'
+                    code += '{t}    del stack[-2:]\n'
+                    code += '{t}    stack.append(now)\n'
+                    code += '{t}else:\n'
+                    code += '{t}    now = int(17 == stack[-1])\n'
+                    code += '{t}    stack[-1] = now\n'
+                else:
+                    code += '{t}if len(stack) >= 2:\n'
+                    code += '{t}    now = int(stack[-2] == stack[-1])\n'
+                    code += '{t}    del stack[-2:]\n'
+                    code += '{t}    stack.append(now)\n'
+                    code += '{t}elif stack:\n'
+                    code += '{t}    now = int(17 == stack[-1])\n'
+                    code += '{t}    stack[-1] = now\n'
+                    code += '{t}else:\n'
+                    code += '{t}    stack.append(0)'
+            elif op_type == 'NT':
+                if stack_min:
+                    code += '{t}stack[-1] = int(not stack[-1])\n'
+                else:
+                    code += '{t}if stack:\n'
+                    code += '{t}    stack[-1] = int(not stack[-1])\n'
+                    code += '{t}else:\n'
+                    code += '{t}    stack.append(0)\n'
             elif op_type == 'GREATER':
-                code += '{t}now = 1 if stack[-2] > stack[-1] else 0\n'
-                code += '{t}del stack[-2:]\n'
-                code += '{t}stack.append(now)\n'
+                if stack_min >= 2:
+                    code += '{t}now = int(stack[-2] > stack[-1])\n'
+                    code += '{t}del stack[-2:]\n'
+                    code += '{t}stack.append(now)\n'
+                elif stack_min:
+                    code += '{t}if len(stack) >= 2:\n'
+                    code += '{t}    now = int(stack[-2] > stack[-1])\n'
+                    code += '{t}    del stack[-2:]\n'
+                    code += '{t}    stack.append(now)\n'
+                    code += '{t}else:\n'
+                    code += '{t}    now = int(17 > stack[-1])\n'
+                    code += '{t}    stack[-1] = now\n'
+                else:
+                    code += '{t}if len(stack) >= 2:\n'
+                    code += '{t}    now = int(stack[-2] > stack[-1])\n'
+                    code += '{t}    del stack[-2:]\n'
+                    code += '{t}    stack.append(now)\n'
+                    code += '{t}elif stack:\n'
+                    code += '{t}    now = int(17 > stack[-1])\n'
+                    code += '{t}    stack[-1] = now\n'
+                    code += '{t}else:\n'
+                    code += '{t}    stack.append(0)'
             elif op_type == 'LESS':
-                code += '{t}now = 1 if stack[-2] < stack[-1] else 0\n'
-                code += '{t}del stack[-2:]\n'
-                code += '{t stack.append(now)\n'
+                if stack_min >= 2:
+                    code += '{t}now = int(stack[-2] < stack[-1])\n'
+                    code += '{t}del stack[-2:]\n'
+                    code += '{t}stack.append(now)\n'
+                elif stack_min:
+                    code += '{t}if len(stack) >= 2:\n'
+                    code += '{t}    now = int(stack[-2] < stack[-1])\n'
+                    code += '{t}    del stack[-2:]\n'
+                    code += '{t}    stack.append(now)\n'
+                    code += '{t}else:\n'
+                    code += '{t}    now = int(17 < stack[-1])\n'
+                    code += '{t}    stack[-1] = now\n'
+                else:
+                    code += '{t}if len(stack) >= 2:\n'
+                    code += '{t}    now = int(stack[-2] < stack[-1])\n'
+                    code += '{t}    del stack[-2:]\n'
+                    code += '{t}    stack.append(now)\n'
+                    code += '{t}elif stack:\n'
+                    code += '{t}    now = int(17 < stack[-1])\n'
+                    code += '{t}    stack[-1] = now\n'
+                    code += '{t}else:\n'
+                    code += '{t}    stack.append(0)'
             elif op_type == 'OUTPUT':
                 if isinstance(op, int):
                     code += '{t}print(%s)\n' % op
                 else:
-                    code += '{t}print(stack.pop(-1))\n'
+                    if stack_min:
+                        code += '{t}print(stack.pop(-1))\n'
+                    else:
+                        code += '{t}if stack:\n'
+                        code += '{t}    print(stack.pop(-1))\n'
+                        code += '{t}else:\n'
+                        code += '{t}    print(17)'
             else:
                 print('Unknown op_type:', op_type)
             print(op_type, op, stack_min)

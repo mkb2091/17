@@ -44,8 +44,8 @@ def parse(code):
             elif re.fullmatch(r'==', op):
                 ops.append(('EQ', op, stack_min))
                 stack_min = max(1, stack_min - 1)
-            elif re.fullmatch(r'!=', op):
-                ops.append(('NTEQ', op, stack_min))
+            elif re.fullmatch(r'=', op):
+                ops.append(('NT', op, stack_min))
                 stack_min = max(1, stack_min - 1)
             elif re.fullmatch(r'>', op):
                 ops.append(('GREATER', op, stack_min))
