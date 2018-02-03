@@ -44,7 +44,7 @@ def parse(code):
             elif re.fullmatch(r'==', op):
                 ops.append(('EQ', op, stack_min))
                 stack_min = max(1, stack_min - 1)
-            elif re.fullmatch(r'=', op):
+            elif re.fullmatch(r'!', op):
                 ops.append(('NT', op, stack_min))
                 stack_min = max(1, stack_min - 1)
             elif re.fullmatch(r'>', op):
@@ -70,6 +70,8 @@ def optimize(ast):
             block = ast[name]
             for i, x in enumerate(block):
                 try:
+                    if changed:
+                        break
                     if x[0] == 'INT' and ast[name][i + 1][0] != 'INT':
                         if block[i + 1][0] == 'ADD':
                             block[i:i + 2] = [('ADD', x[1], block[i][2])]
@@ -84,7 +86,7 @@ def optimize(ast):
                             block[i:i + 2] = [('DIV', x[1], block[i][2])]
                             changed = True
                         elif block[i + 1][0] == 'DUP':
-                            block[i:i + 2] = [('DUP', x[1], block[i][2])]
+                            block[i + 1] = ('INT', block[i][1], block[i + 1][2])
                             changed = True
                         elif block[i + 1][0] == 'STORE':
                             block[i:i + 2] = [('STORE', x[1], block[i][2])]
@@ -92,9 +94,11 @@ def optimize(ast):
                         elif block[i + 1][0] == 'LOAD':
                             block[i:i + 2] = [('LOAD', x[1], block[i][2])]
                             changed = True
-                        elif block[i + 1][0] == 'OUTPUT':
-                            block[i:i + 2] = [('OUTPUT', x[1], block[i][2])]
-                            changed = True
+##                        elif block[i + 1][0] == 'OUTPUT':
+##                            print(block[i:i+2])
+##                            block[i:i + 2] = [('OUTPUT', x[1], block[i][2])]
+##                            print(block[i:i+2])
+##                            changed = True
                     elif x[0] == 'INT' and ast[name][i + 1][0] == 'INT':
                         if block[i + 2][0] == 'ADD':
                             num = (block[i][1] + block[i + 1][1]) % MAX
@@ -116,11 +120,11 @@ def optimize(ast):
                             block[i:i + 3] = [('STORE',
                                                (block[i][1], block[i + 1][1]),
                                                block[i + 1][2])]
-                    if changed:
-                        break
                 except IndexError:
-                    if changed:
-                        break
+                    pass
+                if changed:
+                    ast[name] = block
+                    break
     return ast
 
 

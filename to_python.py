@@ -41,18 +41,18 @@ while True:
     for name in ast:
         code += 'if name == %s:\n' % name
         for op_type, op, stack_min in ast[name]:
-            code += '\n # (%s, %s, %s)\n' % (op_type, op, stack_min) 
+            code += '\n{t}# (%s, %s, %s)\n' % (op_type, op, stack_min) 
             if op_type == 'INT':
                 code += '{t}stack.append(%s)\n' % op
             elif op_type == 'ADD':
                 if isinstance(op, int):
                     if stack_min:
-                        code += '{t}stack[-1] += %s\n' % op
-                        code += '{t}stack[-1] %= {MAX}\n'
+                        code += '{t}stack[-1] = (stack[-1] + '
+                        code += str(op) + ' ) % {MAX}\n'
                     else:
                         code += '{t}if stack:\n'
-                        code += '{t}    stack[-1] += %s\n' % op
-                        code += '{t}    stack[-1] %= {MAX}\n'
+                        code += '{t}    stack[-1] = (stack[-1] + '
+                        code += str(op) + ' ) % {MAX}\n'
                         code += '{t}else:\n'
                         code += '{t}    stack.append(%s)\n' % ((17 + op) % MAX)
                 else:
@@ -79,12 +79,12 @@ while True:
             elif op_type == 'SUB':
                 if isinstance(op, int):
                     if stack_min:
-                        code += '{t}stack[-1] -= %s\n' % op
-                        code += '{t}stack[-1] %= {MAX}\n'
+                        code += '{t}stack[-1] = (stack[-1] - '
+                        code += str(op) + ' ) % {MAX}\n'
                     else:
                         code += '{t}if stack:\n'
-                        code += '{t}    stack[-1] -= %s\n' % op
-                        code += '{t}    stack[-1] %= {MAX}\n'
+                        code += '{t}    stack[-1] = (stack[-1] - '
+                        code += str(op) + ' ) % {MAX}\n'
                         code += '{t}else:\n'
                         code += '{t}    stack.append(%s)\n' % ((17 - op) % MAX)
                 else:
@@ -111,12 +111,12 @@ while True:
             elif op_type == 'MUL':
                 if isinstance(op, int):
                     if stack_min:
-                        code += '{t}stack[-1] *= %s\n' % op
-                        code += '{t}stack[-1] %= {MAX}\n'
+                        code += '{t}stack[-1] = (stack[-1] * '
+                        code += str(op) + ' ) % {MAX}\n'
                     else:
                         code += '{t}if stack:\n'
-                        code += '{t}    stack[-1] *= %s\n' % op
-                        code += '{t}    stack[-1] %= {MAX}\n'
+                        code += '{t}    stack[-1] = (stack[-1] * '
+                        code += str(op) + ' ) % {MAX}\n'
                         code += '{t}else:\n'
                         code += '{t}    stack.append(%s)\n' % ((17 * op) % MAX)
                 else:
@@ -241,10 +241,10 @@ while True:
                         
             elif op_type == 'DUP':
                 if isinstance(op, int):
-                    code += '{t}stack.append(%s)' % op
+                    code += '{t}stack.append(%s)\n' % op
                 else:
                     if stack_min:
-                        code += '{t}stack.append(stack[-1])'
+                        code += '{t}stack.append(stack[-1])\n'
                     else:
                         code += '{t}if stack:\n'
                         code += '{t}    stack.append(stack[-1])\n'
@@ -326,7 +326,7 @@ while True:
                     code += '{t}    now = int(17 < stack[-1])\n'
                     code += '{t}    stack[-1] = now\n'
                     code += '{t}else:\n'
-                    code += '{t}    stack.append(0)'
+                    code += '{t}    stack.append(0)\n'
             elif op_type == 'OUTPUT':
                 if isinstance(op, int):
                     code += '{t}print(%s)\n' % op
@@ -337,7 +337,7 @@ while True:
                         code += '{t}if stack:\n'
                         code += '{t}    print(stack.pop(-1))\n'
                         code += '{t}else:\n'
-                        code += '{t}    print(17)'
+                        code += '{t}    print(17)\n'
             else:
                 print('Unknown op_type:', op_type)
             print(op_type, op, stack_min)
