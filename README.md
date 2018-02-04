@@ -1,5 +1,9 @@
 # 17
-17 is a programming language that uses stack based memory
+17 is a programming language that uses stack based memory and compiles to python(hopefully more in the future)
+
+## To run
+    python3 17.py <file>.17
+    python3 output
 
 It has two stores of data: mem and stack
 Mem is a dynamic array which can be stored to and loaded from
