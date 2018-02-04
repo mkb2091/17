@@ -363,15 +363,15 @@ while True:
                         code += '{t}    print(chr(17), end="")\n'
             elif op_type == 'OUTPUT_NUM':
                 if isinstance(op, int):
-                    code += '{t}print(%s)\n' % op
+                    code += '{t}print(%s, end="")\n' % op
                 else:
                     if stack_min:
-                        code += '{t}print(stack.pop(-1))\n'
+                        code += '{t}print(stack.pop(-1), end="")\n'
                     else:
                         code += '{t}if stack:\n'
-                        code += '{t}    print(stack.pop(-1))\n'
+                        code += '{t}    print(stack.pop(-1), end="")\n'
                         code += '{t}else:\n'
-                        code += '{t}    print(17)\n'
+                        code += '{t}    print(17, end="")\n'
             else:
                 print('Unknown op_type:', op_type)
         code += '    el'
