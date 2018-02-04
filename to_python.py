@@ -351,8 +351,8 @@ while True:
                     code += '{t}else:\n'
                     code += '{t}    stack.append(0)\n'
             elif op_type == 'OUTPUT':
-                if isinstance(op, int):
-                    code += '{t}print("%s", end="")\n' % chr(op)
+                if isinstance(op, tuple):
+                    code += '{t}print("""%s""", end="")\n' % ''.join(map(chr, op))
                 else:
                     if stack_min:
                         code += '{t}print(chr(stack.pop(-1)), end="")\n'

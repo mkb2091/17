@@ -78,7 +78,14 @@ def optimize(ast):
                 try:
                     if changed:
                         break
-                    if x[0] == 'INT' and ast[name][i + 1][0] != 'INT':
+                    if x[0] == 'OUTPUT' and block[i + 1][0] == 'OUTPUT':
+                        if isinstance(block[i][1], tuple):
+                            if isinstance(block[i + 1][1], tuple):
+                                block[i:i + 2] = [('OUTPUT',
+                                                   x[1] + block[i + 1][1],
+                                                   block[i][2])]
+                                changed = True
+                    elif x[0] == 'INT' and ast[name][i + 1][0] != 'INT':
                         if block[i + 1][0] == 'ADD':
                             block[i:i + 2] = [('ADD', x[1], block[i][2])]
                             changed = True
@@ -98,13 +105,19 @@ def optimize(ast):
                             block[i:i + 2] = [('STORE', x[1], block[i][2])]
                             changed = True
                         elif block[i + 1][0] == 'LOAD':
-                            block[i:i + 2] = [('LOAD', x[1], block[i][2])]
-                            changed = True
-##                        elif block[i + 1][0] == 'OUTPUT':
-##                            print(block[i:i+2])
-##                            block[i:i + 2] = [('OUTPUT', x[1], block[i][2])]
-##                            print(block[i:i+2])
-##                            changed = True
+                            if isinstance(block[i + 1][1], str):
+                                block[i:i + 2] = [('LOAD', x[1], block[i][2])]
+                                changed = True
+                        elif block[i + 1][0] == 'OUTPUT':
+                            if isinstance(block[i + 1][1], str):
+                                block[i:i + 2] = [('OUTPUT', (x[1],),
+                                                   block[i][2])]
+                                changed = True
+                        elif block[i + 1][0] == 'OUTPUT_NUM':
+                            if isinstance(block[i + 1][1], str):
+                                block[i:i + 2] = [('OUTPUT_NUM', x[1],
+                                                   block[i][2])]
+                                changed = True
                     elif x[0] == 'INT' and ast[name][i + 1][0] == 'INT':
                         if block[i + 2][0] == 'ADD':
                             num = (block[i][1] + block[i + 1][1]) % MAX
