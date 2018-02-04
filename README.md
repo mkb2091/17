@@ -15,17 +15,25 @@ Commands are seperated by whitespace.
 
 Commands:
 Base 17 number: Pushes it to the stack.
-+ : Adds top two numbers on stack.
-- : Takes top number away from second to top.
-* : Multiplies top two numbers on stack.
-/ : Divides second from top by top.
-@ : Stores numbers second from top at mem[top]
+
+\+ : Adds top two numbers on stack.
+
+\- : Takes top number away from second to top.
+
+\* : Multiplies top two numbers on stack.
+
+\/ : Divides second from top by top.
+
+\@ : Stores numbers second from top at mem[top]
+
 \# : Loads number at mem[top]
-: : Duplicates top number on stack
+
+\: : Duplicates top number on stack
+
 == : If top two numbers are equal pushes 1, else 0
 ! : If top > 0 pushes 1, else 0
 > : If second from top > top
 < : If second from top < top
 % : Second from top mod top
-$ : Prints chr(top)
-$$: Prints number form of top
+\$ : Prints chr(top)
+\$\$ : Prints number form of top
