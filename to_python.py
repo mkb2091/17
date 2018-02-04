@@ -350,6 +350,8 @@ while True:
                     code += '{t}    stack[-1] = now\n'
                     code += '{t}else:\n'
                     code += '{t}    stack.append(0)\n'
+            elif op_type == 'INPUT':
+                code += '{t}stack.append(ord(sys.stdin.read(1)))'
             elif op_type == 'OUTPUT':
                 if isinstance(op, tuple):
                     code += '{t}print(%s, end="")\n' % repr(''.join(map(chr, op)))

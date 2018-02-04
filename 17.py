@@ -56,9 +56,9 @@ def parse(code):
             elif re.fullmatch(r'\%', op):
                 ops.append(('MOD', op, stack_min))
                 stack_min = max(1, stack_min - 1)
-            elif re.fullmatch(r'\$', op):
-                ops.append(('OUTPUT', op, stack_min))
-                stack_min = max(0, stack_min - 1)
+            elif re.fullmatch(r'I', op):
+                ops.append(('INPUT', op, stack_min))
+                stack_min += 1
             elif re.fullmatch(r'\$\$', op):
                 ops.append(('OUTPUT_NUM', op, stack_min))
                 stack_min = max(0, stack_min - 1)
