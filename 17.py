@@ -121,24 +121,24 @@ def optimize(ast):
                     elif x[0] == 'INT' and ast[name][i + 1][0] == 'INT':
                         if block[i + 2][0] == 'ADD':
                             num = (block[i][1] + block[i + 1][1]) % MAX
-                            block[i:i + 3] = [('INT', num, block[i + 1][2])]
+                            block[i:i + 3] = [('INT', num, block[i][2])]
                             changed = True
                         elif block[i + 2][0] == 'SUB':
                             num = (block[i][1] - block[i + 1][1]) % MAX
-                            block[i:i + 3] = [('INT', num, block[i + 1][2])]
+                            block[i:i + 3] = [('INT', num, block[i][2])]
                             changed = True
                         elif block[i + 2][0] == 'MUL':
                             num = (block[i][1] * block[i + 1][1]) % MAX
-                            block[i:i + 3] = [('INT', num, block[i + 1][2])]
+                            block[i:i + 3] = [('INT', num, block[i][2])]
                             changed = True
                         elif block[i + 2][0] == 'DIV':
                             num = (block[i][1] // block[i + 1][1]) % MAX
-                            block[i:i + 3] = [('INT', num, block[i + 1][2])]
+                            block[i:i + 3] = [('INT', num, block[i][2])]
                             changed = True
                         elif block[i + 2][0] == 'STORE':
                             block[i:i + 3] = [('STORE',
                                                (block[i][1], block[i + 1][1]),
-                                               block[i + 1][2])]
+                                               block[i][2])]
                 except IndexError:
                     pass
                 if changed:
