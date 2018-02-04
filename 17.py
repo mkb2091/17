@@ -53,8 +53,14 @@ def parse(code):
             elif re.fullmatch(r'<', op):
                 ops.append(('LESS', op, stack_min))
                 stack_min = max(1, stack_min - 1)
+            elif re.fullmatch(r'\%', op):
+                ops.append(('MOD', op, stack_min))
+                stack_min = max(1, stack_min - 1)
             elif re.fullmatch(r'\$', op):
                 ops.append(('OUTPUT', op, stack_min))
+                stack_min = max(0, stack_min - 1)
+            elif re.fullmatch(r'\$\$', op):
+                ops.append(('OUTPUT_NUM', op, stack_min))
                 stack_min = max(0, stack_min - 1)
             else:
                 print('Unknown OP:', op)
@@ -138,11 +144,9 @@ def main():
     with open(args.file) as file:
         code = file.read()
     ast = parse(code)
-    print(ast)
     print('Parsed')
     ast = optimize(ast)
     print('Optimized')
-    print(ast)
     if args.target == 'python':
         output = to_python.to_python(ast, MAX=MAX)
     elif args.target == 'js':

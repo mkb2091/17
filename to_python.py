@@ -327,7 +327,41 @@ while True:
                     code += '{t}    stack[-1] = now\n'
                     code += '{t}else:\n'
                     code += '{t}    stack.append(0)\n'
+            elif op_type == 'MOD':
+                if stack_min >= 2:
+                    code += '{t}now = int(stack[-2] % stack[-1])\n'
+                    code += '{t}del stack[-2:]\n'
+                    code += '{t}stack.append(now)\n'
+                elif stack_min:
+                    code += '{t}if len(stack) >= 2:\n'
+                    code += '{t}    now = int(stack[-2] % stack[-1])\n'
+                    code += '{t}    del stack[-2:]\n'
+                    code += '{t}    stack.append(now)\n'
+                    code += '{t}else:\n'
+                    code += '{t}    now = int(17 % stack[-1])\n'
+                    code += '{t}    stack[-1] = now\n'
+                else:
+                    code += '{t}if len(stack) >= 2:\n'
+                    code += '{t}    now = int(stack[-2] % stack[-1])\n'
+                    code += '{t}    del stack[-2:]\n'
+                    code += '{t}    stack.append(now)\n'
+                    code += '{t}elif stack:\n'
+                    code += '{t}    now = int(17 % stack[-1])\n'
+                    code += '{t}    stack[-1] = now\n'
+                    code += '{t}else:\n'
+                    code += '{t}    stack.append(0)\n'
             elif op_type == 'OUTPUT':
+                if isinstance(op, int):
+                    code += '{t}print("%s", end="")\n' % chr(op)
+                else:
+                    if stack_min:
+                        code += '{t}print(chr(stack.pop(-1)), end="")\n'
+                    else:
+                        code += '{t}if stack:\n'
+                        code += '{t}    print(chr(stack.pop(-1)), end="")\n'
+                        code += '{t}else:\n'
+                        code += '{t}    print(chr(17), end="")\n'
+            elif op_type == 'OUTPUT_NUM':
                 if isinstance(op, int):
                     code += '{t}print(%s)\n' % op
                 else:
@@ -340,7 +374,6 @@ while True:
                         code += '{t}    print(17)\n'
             else:
                 print('Unknown op_type:', op_type)
-            print(op_type, op, stack_min)
         code += '    el'
     code += 'se:\n        break'  
     return code.format(MAX=MAX, t=' ' * 8)
