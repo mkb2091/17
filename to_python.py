@@ -357,10 +357,10 @@ while True:
             elif op_type == 'MOD':
                 if isinstance(op, int):
                     if stack_min:
-                        code += '{t}stack[-1] = int(stack[-1] % %s)\n' % op
+                        code += '{t}stack[-1] = int(stack[-1] %% %s)\n' % op
                     else:
                         code += '{t}if stack:\n'
-                        code += '{t}    stack[-1] = int(stack[-1] % %s)\n' % op
+                        code += '{t}    stack[-1] = int(stack[-1] %% %s)\n' % op
                         code += '{t}else:\n'
                         code += '{t}    stack.append(%s)\n' % int(17 % op)
                 else:
