@@ -96,8 +96,14 @@ def partial_evaluation(ast, MAX):
                     final[name].append(('STORE', stack.pop(), 0))
                 else:
                     final[name].append(('STORE', op, 0))
-##            elif op_type == 'LOAD':
-##                if stack:
+            elif op_type == 'LOAD':
+                if stack:
+                    for stack_min, i in enumerate(stack[:-1]):
+                        final[name].append(('INT', i, stack_min))
+                    final[name].append(('LOAD', stack[-1], len(stack)))
+                    stack.clear()
+                else:
+                    final[name].append(('LOAD', op, 0))
             elif op_type == 'DUP':
                 if stack:
                     stack.append(stack[-1])
@@ -162,11 +168,9 @@ def partial_evaluation(ast, MAX):
             else:
                 for stack_min, i in enumerate(stack):
                     final[name].append(('INT', i, stack_min))
-                print(stack, len(stack))
                 final[name].append((op_type, op, len(stack)))
                 stack.clear()
                 print('Unknown op_type:', op_type, op)
-        print(name, stack)
         for stack_min, i in enumerate(stack):
             final[name].append(('INT', i, stack_min))
     return final
