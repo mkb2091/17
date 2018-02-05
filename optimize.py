@@ -8,33 +8,67 @@ def bounds_check_elimination(ast, MAX):
             if op_type == 'INT':
                 stack_min += 1
             elif op_type == 'ADD':
-                stack_min = max(1, stack_min - 1)
+                if isinstance(op, str):
+                    stack_min = max(1, stack_min - 1)
+                else:
+                    stack_min = max(1, stack_min)
             elif op_type == 'SUB':
-                stack_min = max(1, stack_min - 1)
+                if isinstance(op, str):
+                    stack_min = max(1, stack_min - 1)
+                else:
+                    stack_min = max(1, stack_min)
             elif op_type == 'MUL':
-                stack_min = max(1, stack_min - 1)
+                if isinstance(op, str):
+                    stack_min = max(1, stack_min - 1)
+                else:
+                    stack_min = max(1, stack_min)
             elif op_type == 'DIV':
-                stack_min = max(1, stack_min - 1)
+                if isinstance(op, str):
+                    stack_min = max(1, stack_min - 1)
+                else:
+                    stack_min = max(1, stack_min)
             elif op_type == 'STORE':
-                stack_min = max(0, stack_min - 2)
+                if isinstance(op, str):
+                    stack_min = max(0, stack_min - 2)
+                elif isinstance(op, int):
+                    stack_min = max(0, stack_min - 1)
             elif op_type == 'LOAD':
-                stack_min = max(1, stack_min)
+                if isinstance(op, str):
+                    stack_min = max(1, stack_min)
+                else:
+                    stack_min += 1
             elif op_type == 'DUP':
                 stack_min += 1
             elif op_type == 'EQ':
-                stack_min = max(1, stack_min - 1)
+                if isinstance(op, str):
+                    stack_min = max(1, stack_min - 1)
+                else:
+                    stack_min = max(1, stack_min)
             elif op_type == 'NT':
-                stack_min = max(1, stack_min)
+                if isinstance(op, str):
+                    stack_min = max(1, stack_min)
+                else:
+                    stack_min += 1
             elif op_type == 'GREATER':
-                stack_min = max(1, stack_min - 1)
+                if isinstance(op, str):
+                    stack_min = max(1, stack_min - 1)
+                else:
+                    stack_min = max(1, stack_min)
             elif op_type == 'LESS':
-                stack_min = max(1, stack_min - 1)
+                if isinstance(op, str):
+                    stack_min = max(1, stack_min - 1)
+                else:
+                    stack_min = max(1, stack_min)
             elif op_type == 'MOD':
-                stack_min = max(1, stack_min - 1)
+                if isinstance(op, str):
+                    stack_min = max(1, stack_min - 1)
+                else:
+                    stack_min = max(1, stack_min)
             elif op_type == 'INPUT':
                 stack_min += 1
             elif op_type == 'OUTPUT':
-                stack_min = max(0, stack_min - 1)
+                if isinstance(op, str):
+                    stack_min = max(0, stack_min - 1)
             elif op_type == 'OUTPUT_NUM':
                 stack_min = max(0, stack_min - 1)
             else:
