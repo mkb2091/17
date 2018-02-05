@@ -251,28 +251,37 @@ while True:
                         code += '{t}else:\n'
                         code += '{t}    stack.append(17)\n'
             elif op_type == 'EQ':
-                if stack_min >= 2:
-                    code += '{t}now = int(stack[-2] == stack[-1])\n'
-                    code += '{t}del stack[-2:]\n'
-                    code += '{t}stack.append(now)\n'
-                elif stack_min:
-                    code += '{t}if len(stack) >= 2:\n'
-                    code += '{t}    now = int(stack[-2] == stack[-1])\n'
-                    code += '{t}    del stack[-2:]\n'
-                    code += '{t}    stack.append(now)\n'
-                    code += '{t}else:\n'
-                    code += '{t}    now = int(17 == stack[-1])\n'
-                    code += '{t}    stack[-1] = now\n'
+                if isinstance(op, int):
+                    if stack_min:
+                        code += '{t}stack[-1] = int(stack[-1] == %s)\n' % op
+                    else:
+                        code += '{t}if stack:\n'
+                        code += '{t}    stack[-1] = int(stack[-1] == %s)\n' % op
+                        code += '{t}else:\n'
+                        code += '{t}    stack.append(%s)\n' % int(17 == op)
                 else:
-                    code += '{t}if len(stack) >= 2:\n'
-                    code += '{t}    now = int(stack[-2] == stack[-1])\n'
-                    code += '{t}    del stack[-2:]\n'
-                    code += '{t}    stack.append(now)\n'
-                    code += '{t}elif stack:\n'
-                    code += '{t}    now = int(17 == stack[-1])\n'
-                    code += '{t}    stack[-1] = now\n'
-                    code += '{t}else:\n'
-                    code += '{t}    stack.append(0)'
+                    if stack_min >= 2:
+                        code += '{t}now = int(stack[-2] == stack[-1])\n'
+                        code += '{t}del stack[-2:]\n'
+                        code += '{t}stack.append(now)\n'
+                    elif stack_min:
+                        code += '{t}if len(stack) >= 2:\n'
+                        code += '{t}    now = int(stack[-2] == stack[-1])\n'
+                        code += '{t}    del stack[-2:]\n'
+                        code += '{t}    stack.append(now)\n'
+                        code += '{t}else:\n'
+                        code += '{t}    now = int(17 == stack[-1])\n'
+                        code += '{t}    stack[-1] = now\n'
+                    else:
+                        code += '{t}if len(stack) >= 2:\n'
+                        code += '{t}    now = int(stack[-2] == stack[-1])\n'
+                        code += '{t}    del stack[-2:]\n'
+                        code += '{t}    stack.append(now)\n'
+                        code += '{t}elif stack:\n'
+                        code += '{t}    now = int(17 == stack[-1])\n'
+                        code += '{t}    stack[-1] = now\n'
+                        code += '{t}else:\n'
+                        code += '{t}    stack.append(0)'
             elif op_type == 'NT':
                 if stack_min:
                     code += '{t}stack[-1] = int(not stack[-1])\n'
@@ -282,74 +291,101 @@ while True:
                     code += '{t}else:\n'
                     code += '{t}    stack.append(0)\n'
             elif op_type == 'GREATER':
-                if stack_min >= 2:
-                    code += '{t}now = int(stack[-2] > stack[-1])\n'
-                    code += '{t}del stack[-2:]\n'
-                    code += '{t}stack.append(now)\n'
-                elif stack_min:
-                    code += '{t}if len(stack) >= 2:\n'
-                    code += '{t}    now = int(stack[-2] > stack[-1])\n'
-                    code += '{t}    del stack[-2:]\n'
-                    code += '{t}    stack.append(now)\n'
-                    code += '{t}else:\n'
-                    code += '{t}    now = int(17 > stack[-1])\n'
-                    code += '{t}    stack[-1] = now\n'
+                if isinstance(op, int):
+                    if stack_min:
+                        code += '{t}stack[-1] = int(stack[-1] > %s)\n' % op
+                    else:
+                        code += '{t}if stack:\n'
+                        code += '{t}    stack[-1] = int(stack[-1] > %s)\n' % op
+                        code += '{t}else:\n'
+                        code += '{t}    stack.append(%s)\n' % int(17 > op)
                 else:
-                    code += '{t}if len(stack) >= 2:\n'
-                    code += '{t}    now = int(stack[-2] > stack[-1])\n'
-                    code += '{t}    del stack[-2:]\n'
-                    code += '{t}    stack.append(now)\n'
-                    code += '{t}elif stack:\n'
-                    code += '{t}    now = int(17 > stack[-1])\n'
-                    code += '{t}    stack[-1] = now\n'
-                    code += '{t}else:\n'
-                    code += '{t}    stack.append(0)'
+                    if stack_min >= 2:
+                        code += '{t}now = int(stack[-2] > stack[-1])\n'
+                        code += '{t}del stack[-2:]\n'
+                        code += '{t}stack.append(now)\n'
+                    elif stack_min:
+                        code += '{t}if len(stack) >= 2:\n'
+                        code += '{t}    now = int(stack[-2] > stack[-1])\n'
+                        code += '{t}    del stack[-2:]\n'
+                        code += '{t}    stack.append(now)\n'
+                        code += '{t}else:\n'
+                        code += '{t}    now = int(17 > stack[-1])\n'
+                        code += '{t}    stack[-1] = now\n'
+                    else:
+                        code += '{t}if len(stack) >= 2:\n'
+                        code += '{t}    now = int(stack[-2] > stack[-1])\n'
+                        code += '{t}    del stack[-2:]\n'
+                        code += '{t}    stack.append(now)\n'
+                        code += '{t}elif stack:\n'
+                        code += '{t}    now = int(17 > stack[-1])\n'
+                        code += '{t}    stack[-1] = now\n'
+                        code += '{t}else:\n'
+                        code += '{t}    stack.append(0)'
             elif op_type == 'LESS':
-                if stack_min >= 2:
-                    code += '{t}now = int(stack[-2] < stack[-1])\n'
-                    code += '{t}del stack[-2:]\n'
-                    code += '{t}stack.append(now)\n'
-                elif stack_min:
-                    code += '{t}if len(stack) >= 2:\n'
-                    code += '{t}    now = int(stack[-2] < stack[-1])\n'
-                    code += '{t}    del stack[-2:]\n'
-                    code += '{t}    stack.append(now)\n'
-                    code += '{t}else:\n'
-                    code += '{t}    now = int(17 < stack[-1])\n'
-                    code += '{t}    stack[-1] = now\n'
+                if isinstance(op, int):
+                    if stack_min:
+                        code += '{t}stack[-1] = int(stack[-1] < %s)\n' % op
+                    else:
+                        code += '{t}if stack:\n'
+                        code += '{t}    stack[-1] = int(stack[-1] < %s)\n' % op
+                        code += '{t}else:\n'
+                        code += '{t}    stack.append(%s)\n' % int(17 < op)
                 else:
-                    code += '{t}if len(stack) >= 2:\n'
-                    code += '{t}    now = int(stack[-2] < stack[-1])\n'
-                    code += '{t}    del stack[-2:]\n'
-                    code += '{t}    stack.append(now)\n'
-                    code += '{t}elif stack:\n'
-                    code += '{t}    now = int(17 < stack[-1])\n'
-                    code += '{t}    stack[-1] = now\n'
-                    code += '{t}else:\n'
-                    code += '{t}    stack.append(0)\n'
+                    if stack_min >= 2:
+                        code += '{t}now = int(stack[-2] < stack[-1])\n'
+                        code += '{t}del stack[-2:]\n'
+                        code += '{t}stack.append(now)\n'
+                    elif stack_min:
+                        code += '{t}if len(stack) >= 2:\n'
+                        code += '{t}    now = int(stack[-2] < stack[-1])\n'
+                        code += '{t}    del stack[-2:]\n'
+                        code += '{t}    stack.append(now)\n'
+                        code += '{t}else:\n'
+                        code += '{t}    now = int(17 < stack[-1])\n'
+                        code += '{t}    stack[-1] = now\n'
+                    else:
+                        code += '{t}if len(stack) >= 2:\n'
+                        code += '{t}    now = int(stack[-2] < stack[-1])\n'
+                        code += '{t}    del stack[-2:]\n'
+                        code += '{t}    stack.append(now)\n'
+                        code += '{t}elif stack:\n'
+                        code += '{t}    now = int(17 < stack[-1])\n'
+                        code += '{t}    stack[-1] = now\n'
+                        code += '{t}else:\n'
+                        code += '{t}    stack.append(0)\n'
             elif op_type == 'MOD':
-                if stack_min >= 2:
-                    code += '{t}now = int(stack[-2] % stack[-1])\n'
-                    code += '{t}del stack[-2:]\n'
-                    code += '{t}stack.append(now)\n'
-                elif stack_min:
-                    code += '{t}if len(stack) >= 2:\n'
-                    code += '{t}    now = int(stack[-2] % stack[-1])\n'
-                    code += '{t}    del stack[-2:]\n'
-                    code += '{t}    stack.append(now)\n'
-                    code += '{t}else:\n'
-                    code += '{t}    now = int(17 % stack[-1])\n'
-                    code += '{t}    stack[-1] = now\n'
+                if isinstance(op, int):
+                    if stack_min:
+                        code += '{t}stack[-1] = int(stack[-1] % %s)\n' % op
+                    else:
+                        code += '{t}if stack:\n'
+                        code += '{t}    stack[-1] = int(stack[-1] % %s)\n' % op
+                        code += '{t}else:\n'
+                        code += '{t}    stack.append(%s)\n' % int(17 % op)
                 else:
-                    code += '{t}if len(stack) >= 2:\n'
-                    code += '{t}    now = int(stack[-2] % stack[-1])\n'
-                    code += '{t}    del stack[-2:]\n'
-                    code += '{t}    stack.append(now)\n'
-                    code += '{t}elif stack:\n'
-                    code += '{t}    now = int(17 % stack[-1])\n'
-                    code += '{t}    stack[-1] = now\n'
-                    code += '{t}else:\n'
-                    code += '{t}    stack.append(0)\n'
+                    if stack_min >= 2:
+                        code += '{t}now = int(stack[-2] % stack[-1])\n'
+                        code += '{t}del stack[-2:]\n'
+                        code += '{t}stack.append(now)\n'
+                    elif stack_min:
+                        code += '{t}if len(stack) >= 2:\n'
+                        code += '{t}    now = int(stack[-2] % stack[-1])\n'
+                        code += '{t}    del stack[-2:]\n'
+                        code += '{t}    stack.append(now)\n'
+                        code += '{t}else:\n'
+                        code += '{t}    now = int(17 % stack[-1])\n'
+                        code += '{t}    stack[-1] = now\n'
+                    else:
+                        code += '{t}if len(stack) >= 2:\n'
+                        code += '{t}    now = int(stack[-2] % stack[-1])\n'
+                        code += '{t}    del stack[-2:]\n'
+                        code += '{t}    stack.append(now)\n'
+                        code += '{t}elif stack:\n'
+                        code += '{t}    now = int(17 % stack[-1])\n'
+                        code += '{t}    stack[-1] = now\n'
+                        code += '{t}else:\n'
+                        code += '{t}    stack.append(0)\n'
             elif op_type == 'INPUT':
                 code += '{t}stack.append(ord(sys.stdin.read(1)))'
             elif op_type == 'OUTPUT':

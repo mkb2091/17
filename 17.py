@@ -16,56 +16,39 @@ def parse(code):
             exit()
         name = int(name, 17)
         ops = []
-        stack_min = 0
         for op in re.findall('([\S]+)', data):
             if re.fullmatch('[0-9a-g]+', op):
-                ops.append(('INT', int(op, 17) % MAX, stack_min))
-                stack_min += 1
+                ops.append(('INT', int(op, 17) % MAX, 0))
             elif re.fullmatch(r'\+', op):
-                ops.append(('ADD', op, stack_min))
-                stack_min = max(1, stack_min - 1)
+                ops.append(('ADD', op, 0))
             elif re.fullmatch(r'\-', op):
-                ops.append(('SUB', op, stack_min))
-                stack_min = max(1, stack_min - 1)
+                ops.append(('SUB', op, 0))
             elif re.fullmatch(r'\*', op):
-                ops.append(('MUL', op, stack_min))
-                stack_min = max(1, stack_min - 1)
+                ops.append(('MUL', op, 0))
             elif re.fullmatch(r'\/', op):
-                ops.append(('DIV', op, stack_min))
-                stack_min = max(1, stack_min - 1)
+                ops.append(('DIV', op, 0))
             elif re.fullmatch(r'\@', op):
-                ops.append(('STORE', op, stack_min))
-                stack_min = max(0, stack_min - 2)
+                ops.append(('STORE', op, 0))
             elif re.fullmatch(r'\#', op):
-                ops.append(('LOAD', op, stack_min))
-                stack_min = max(1, stack_min)
+                ops.append(('LOAD', op, 0))
             elif re.fullmatch(r':', op):
-                ops.append(('DUP', op, stack_min))
-                stack_min += 1
+                ops.append(('DUP', op, 0))
             elif re.fullmatch(r'==', op):
-                ops.append(('EQ', op, stack_min))
-                stack_min = max(1, stack_min - 1)
+                ops.append(('EQ', op, 0))
             elif re.fullmatch(r'!', op):
-                ops.append(('NT', op, stack_min))
-                stack_min = max(1, stack_min - 1)
+                ops.append(('NT', op, 0))
             elif re.fullmatch(r'>', op):
-                ops.append(('GREATER', op, stack_min))
-                stack_min = max(1, stack_min - 1)
+                ops.append(('GREATER', op, 0))
             elif re.fullmatch(r'<', op):
-                ops.append(('LESS', op, stack_min))
-                stack_min = max(1, stack_min - 1)
+                ops.append(('LESS', op, 0))
             elif re.fullmatch(r'\%', op):
-                ops.append(('MOD', op, stack_min))
-                stack_min = max(1, stack_min - 1)
+                ops.append(('MOD', op, 0))
             elif re.fullmatch(r'I', op):
-                ops.append(('INPUT', op, stack_min))
-                stack_min += 1
+                ops.append(('INPUT', op, 0))
             elif re.fullmatch(r'\$', op):
-                ops.append(('OUTPUT', op, stack_min))
-                stack_min = max(0, stack_min - 1)
+                ops.append(('OUTPUT', op, 0))
             elif re.fullmatch(r'\$\$', op):
-                ops.append(('OUTPUT_NUM', op, stack_min))
-                stack_min = max(0, stack_min - 1)
+                ops.append(('OUTPUT_NUM', op, 0))
             else:
                 print('Unknown OP:', op)
         if ops:
