@@ -196,7 +196,7 @@ def peephole(ast, MAX):
 
 
 def optimize(ast, MAX):
-    ast = bounds_check_elimination(ast, MAX)
     ast = partial_evaluation(ast, MAX)
     ast = peephole(ast, MAX)
+    ast = bounds_check_elimination(ast, MAX)
     return ast
