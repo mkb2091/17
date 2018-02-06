@@ -1,3 +1,5 @@
+import copy
+
 def bounds_check_elimination(ast, MAX):
     final = {}
     for name in ast:
@@ -254,17 +256,30 @@ def loop_unrolling(ast, MAX):
     for name in ast:
         if ast[name][-1][0] == 'STORE':
             if isinstance(ast[name][-1][1], tuple):
+                #print(ast[name][-1])
                 if ast[name][-1][1][1] == 0:
                     num = ast[name][-1][1][0]
                     if num in ast:
                         ast[name].extend(ast[num])
     return ast
 
+def dead_code_elimination(ast, MAX):
+    if ast[2149][-1][0] == 'STORE':
+        if isinstance(ast[2149][-1][1], tuple):
+            if ast[2149][-1][1][1] == 0:
+                if ast[2149][-1][1][0] not in ast:
+                    return {2149: ast[2149]}
+    return ast
+
 
 def optimize(ast, MAX, OPTIMIZE):
     for i in range(OPTIMIZE * 10):
+        old = copy.copy(ast)
         ast = partial_evaluation(ast, MAX)
+        ast = dead_code_elimination(ast, MAX)
         ast = peephole(ast, MAX)
         ast = loop_unrolling(ast, MAX)
+        if ast == old:
+            break
     ast = bounds_check_elimination(ast, MAX)
     return ast
