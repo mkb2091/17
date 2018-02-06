@@ -268,20 +268,24 @@ def dead_code_elimination(ast, MAX):
         if isinstance(ast[2149][-1][1], tuple):
             if ast[2149][-1][1][1] == 0:
                 if ast[2149][-1][1][0] not in ast:
+                    if ast[2149][-2][0] == 'STORE':
+                        del ast[2149][-2]
                     return {2149: ast[2149]}
     return ast
 
 
 def optimize(ast, MAX, OPTIMIZE):
-    while True:
-        old = copy.copy(ast)
+    for r in range(1000):
+        print('Round: %s Instructions: %s'
+              % (r, sum([len(ast[i]) for i in ast])))
+        old = str(ast)
+        if OPTIMIZE >= 3:
+            ast = loop_unrolling(ast, MAX)
         if OPTIMIZE:
             ast = partial_evaluation(ast, MAX)
             ast = dead_code_elimination(ast, MAX)
             ast = peephole(ast, MAX)
-        if OPTIMIZE >= 3:
-            ast = loop_unrolling(ast, MAX)
-        if ast == old:
+        if str(ast) == old:
             break
     ast = bounds_check_elimination(ast, MAX)
     return ast
