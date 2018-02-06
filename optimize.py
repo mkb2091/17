@@ -208,6 +208,9 @@ def partial_evaluation(ast, MAX):
             else:
                 for stack_min, i in enumerate(stack):
                     final[name].append(('INT', i, stack_min))
+                for key in mem:
+                    final[name].append(('STORE', (mem[key], key), 0))
+                mem.clear()
                 final[name].append((op_type, op, len(stack)))
                 stack.clear()
                 print('Unknown op_type:', op_type, op)
