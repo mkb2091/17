@@ -64,7 +64,7 @@ def main():
     parser.add_argument('-o', '--output', default='output')
     parser.add_argument('-t', '--target', help='Target language',
                         default='python')
-    parser.add_argument('-O', '--optimize', type=int, default=0)
+    parser.add_argument('-O', '--optimize', type=int, default=1)
     args = parser.parse_args()
     with open(args.file) as file:
         code = file.read()

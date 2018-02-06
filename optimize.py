@@ -273,12 +273,14 @@ def dead_code_elimination(ast, MAX):
 
 
 def optimize(ast, MAX, OPTIMIZE):
-    for i in range(OPTIMIZE * 10):
+    while True:
         old = copy.copy(ast)
-        ast = partial_evaluation(ast, MAX)
-        ast = dead_code_elimination(ast, MAX)
-        ast = peephole(ast, MAX)
-        ast = loop_unrolling(ast, MAX)
+        if OPTIMIZE:
+            ast = partial_evaluation(ast, MAX)
+            ast = dead_code_elimination(ast, MAX)
+            ast = peephole(ast, MAX)
+        if OPTIMIZE >= 3:
+            ast = loop_unrolling(ast, MAX)
         if ast == old:
             break
     ast = bounds_check_elimination(ast, MAX)
