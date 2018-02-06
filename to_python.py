@@ -1,4 +1,4 @@
-def to_python(ast, MAX):
+def to_python(ast, MAX, OPTIMIZE):
     code = '''
 from array import array
 import sys
@@ -41,7 +41,8 @@ while True:
     for name in ast:
         code += 'if name == %s:\n' % name
         for op_type, op, stack_min in ast[name]:
-            code += '\n{t}# (%s, %s, %s)\n' % (op_type, op, stack_min) 
+            if not OPTIMIZE:
+                code += '\n{t}# (%s, %s, %s)\n' % (op_type, op, stack_min) 
             if op_type == 'INT':
                 code += '{t}stack.append(%s)\n' % op
             elif op_type == 'ADD':
@@ -389,7 +390,7 @@ while True:
             elif op_type == 'INPUT':
                 code += '{t}stack.append(ord(sys.stdin.read(1)))'
             elif op_type == 'OUTPUT':
-                if isinstance(op, tuple):
+                if isinstance(op, list):
                     code += '{t}print(%s, end="")\n' % repr(''.join(map(chr, op)))
                 else:
                     if stack_min:

@@ -64,17 +64,18 @@ def main():
     parser.add_argument('-o', '--output', default='output')
     parser.add_argument('-t', '--target', help='Target language',
                         default='python')
+    parser.add_argument('-O', '--optimize', type=int, default=0)
     args = parser.parse_args()
     with open(args.file) as file:
         code = file.read()
     ast = parse(code)
     print('Parsed')
-    ast = optimize.optimize(ast, MAX)
+    ast = optimize.optimize(ast, MAX, args.optimize)
     print('Optimized')
     if args.target == 'python':
-        output = to_python.to_python(ast, MAX=MAX)
+        output = to_python.to_python(ast, MAX, args.optimize)
     elif args.target == 'js':
-        output = to_javascript.to_javascript(ast, MAX=MAX)
+        output = to_javascript.to_javascript(ast, MAX)
     else:
         print('Unknown language')
         return

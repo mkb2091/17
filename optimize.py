@@ -82,8 +82,13 @@ def partial_evaluation(ast, MAX):
         stack = []
         mem = {}
         for op_type, op, _ in ast[name]:
-            if op_type == 'INT':
+            if isinstance(op, tuple):
+                stack.extend(op)
+            elif isinstance(op, int):
                 stack.append(op)
+            
+            if op_type == 'INT':
+                pass
             elif op_type == 'ADD':
                 if len(stack) >= 2:
                     now = stack[-2] + stack[-1]
@@ -197,12 +202,13 @@ def partial_evaluation(ast, MAX):
                 stack.clear()
             elif op_type == 'OUTPUT':
                 if stack:
-                    final[name].append(('OUTPUT', (stack.pop(), ), 0))
+                    final[name].append(('OUTPUT', [stack.pop()], 0))
                 else:
                     final[name].append(('OUTPUT', op, 0))
             elif op_type == 'OUTPUT_NUM':
                 if stack:
-                    final[name].append(('OUTPUT_NUM', stack.pop(), 0))
+                    final[name].append(('OUTPUT',
+                                        list(map(ord, str(stack.pop()))), 0))
                 else:
                     final[name].append(('OUTPUT_NUM', op, 0))
             else:
@@ -216,7 +222,7 @@ def partial_evaluation(ast, MAX):
                 print('Unknown op_type:', op_type, op)
         for stack_min, i in enumerate(stack):
             final[name].append(('INT', i, stack_min))
-        for key in mem:
+        for key in sorted(mem, reverse=True):
             final[name].append(('STORE', (mem[key], key), 0))
         mem.clear()
     return final
@@ -231,8 +237,8 @@ def peephole(ast, MAX):
             for i, x in enumerate(block):
                 try:
                     if x[0] == 'OUTPUT' and block[i + 1][0] == 'OUTPUT':
-                        if isinstance(block[i][1], tuple):
-                            if isinstance(block[i + 1][1], tuple):
+                        if isinstance(block[i][1], list):
+                            if isinstance(block[i + 1][1], list):
                                 block[i:i + 2] = [('OUTPUT',
                                                    x[1] + block[i + 1][1],
                                                    block[i][2])]
@@ -244,9 +250,21 @@ def peephole(ast, MAX):
                     break
     return ast
 
+def loop_unrolling(ast, MAX):
+    for name in ast:
+        if ast[name][-1][0] == 'STORE':
+            if isinstance(ast[name][-1][1], tuple):
+                if ast[name][-1][1][1] == 0:
+                    num = ast[name][-1][1][0]
+                    if num in ast:
+                        ast[name].extend(ast[num])
+    return ast
 
-def optimize(ast, MAX):
-    ast = partial_evaluation(ast, MAX)
-    ast = peephole(ast, MAX)
+
+def optimize(ast, MAX, OPTIMIZE):
+    for i in range(OPTIMIZE * 10):
+        ast = partial_evaluation(ast, MAX)
+        ast = peephole(ast, MAX)
+        ast = loop_unrolling(ast, MAX)
     ast = bounds_check_elimination(ast, MAX)
     return ast
