@@ -12,25 +12,25 @@ class InfVector:
     def get(self, key):
         new_key = key // self.size
         if new_key in self.data:
-            return self.data[new_key][key % self.size]
+            return self.data[new_key][1][key % self.size]
         return 17
 
     def set(self, key, value):
         new_key = key // self.size
         value %= {MAX}
         if new_key in self.data:
-            self.data[new_key][key % self.size] = value
             if value == 17:
-                clean = True
-                for i in self.data[new_key]:
-                    if i != 17:
-                        clean = False
-                        break
-                if clean:
-                    del self.data[new_key]
+                if self.data[new_key][1][key % self.size] != 17:
+                    self.data[new_key][0] -= 1
+                    if self.data[new_key][0] == 0:
+                        del self.data[new_key]
+            else:
+                if self.data[new_key][1][key % self.size] == 17:
+                    self.data[new_key][0] += 1
+                self.data[new_key][1][key % self.size] = value
         else:
-            self.data[new_key] = array('Q', [17] * self.size)
-            self.data[new_key][key % self.size] = value
+            self.data[new_key] = [1, array('Q', [17] * self.size)]
+            self.data[new_key][1][key % self.size] = value
 
 stack = array('Q')
 mem = InfVector(17 ** 3)
