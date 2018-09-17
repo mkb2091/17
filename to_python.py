@@ -1,43 +1,42 @@
-def to_python(ast, MAX, OPTIMIZE):
+def to_python(ast, MAX, OPTIMIZE, size=17**3):
     code = '''
 from array import array
 import sys
 stack = []
 
 class InfVector:
-    def __init__(self, size):
-        self.size = size
+    def __init__(self):
         self.data = dict()
 
     def get(self, key):
-        new_key = key // self.size
+        new_key = key // SIZE
         if new_key in self.data:
-            return self.data[new_key][1][key % self.size]
+            return self.data[new_key][1][key % SIZE]
         return 17
 
     def set(self, key, value):
-        new_key = key // self.size
+        new_key = key // SIZE
         value %= {MAX}
         if new_key in self.data:
             if value == 17:
-                if self.data[new_key][1][key % self.size] != 17:
+                if self.data[new_key][1][key % SIZE] != 17:
                     self.data[new_key][0] -= 1
                     if self.data[new_key][0] == 0:
                         del self.data[new_key]
             else:
-                if self.data[new_key][1][key % self.size] == 17:
+                if self.data[new_key][1][key % SIZE] == 17:
                     self.data[new_key][0] += 1
-                self.data[new_key][1][key % self.size] = value
+                self.data[new_key][1][key % SIZE] = value
         else:
-            self.data[new_key] = [1, array('Q', [17] * self.size)]
-            self.data[new_key][1][key % self.size] = value
+            self.data[new_key] = [1, array('Q', [17] * SIZE)]
+            self.data[new_key][1][key % SIZE] = value
 
 stack = array('Q')
-mem = InfVector(17 ** 3)
+mem = InfVector()
 mem.set(0, int('777', 17))
 while True:
     name = mem.get(0)
-    '''
+    '''.replace('SIZE', str(size))
     for name in ast:
         code += 'if name == %s:\n' % name
         for op_type, op, stack_min in ast[name]:
@@ -388,7 +387,7 @@ while True:
                         code += '{t}else:\n'
                         code += '{t}    stack.append(0)\n'
             elif op_type == 'INPUT':
-                code += '{t}stack.append(ord(sys.stdin.read(1)))'
+                code += '{t}stack.append(ord(sys.stdin.read(1)))\n'
             elif op_type == 'OUTPUT':
                 if isinstance(op, list):
                     code += '{t}print(%s, end="")\n' % repr(''.join(map(chr, op)))
