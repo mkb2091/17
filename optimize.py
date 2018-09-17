@@ -256,7 +256,6 @@ def loop_unrolling(ast, MAX):
     for name in ast:
         if ast[name][-1][0] == 'STORE':
             if isinstance(ast[name][-1][1], tuple):
-                #print(ast[name][-1])
                 if ast[name][-1][1][1] == 0:
                     num = ast[name][-1][1][0]
                     if num in ast:
