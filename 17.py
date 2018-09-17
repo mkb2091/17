@@ -6,7 +6,7 @@ import to_python
 import optimize
 
 FUNCTIONS = '([0-9a-g]+) ?{([^}]*)}'
-MAX = 18446744073709551616
+MAX = 2**64
 
 def parse(code):
     ast = {}
