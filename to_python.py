@@ -23,6 +23,9 @@ class InfVector:
                     self.data[new_key][0] -= 1
                     if self.data[new_key][0] == 0:
                         del self.data[new_key]
+                    else:
+                        self.data[new_key][1][key % 4913] = 17
+                        #value, but thats already known
             else:
                 if self.data[new_key][1][key % SIZE] == 17:
                     self.data[new_key][0] += 1
