@@ -390,7 +390,9 @@ while True:
                 code += '{t}stack.append(ord(sys.stdin.read(1)))\n'
             elif op_type == 'OUTPUT':
                 if isinstance(op, list):
-                    if chr(op[-1]) == '\n':
+                    if op == [ord('\n')]:
+                        code += '{t}print()\n'
+                    elif op[-1:] == [ord('\n')]:
                         code += '{t}print(%s)\n' % repr(''.join(map(chr, op[:-1])))
                     else:
                         code += '{t}print(%s, end="")\n' % repr(''.join(map(chr, op)))
