@@ -4,6 +4,7 @@ import re
 import to_javascript
 import to_python
 import optimize
+import verify
 
 FUNCTIONS = '([0-9a-g]+) ?{([^}]*)}'
 MAX = 2**64
@@ -18,37 +19,37 @@ def parse(code):
         ops = []
         for op in re.findall('([\S]+)', data):
             if re.fullmatch('[0-9a-g]+', op):
-                ops.append(('INT', int(op, 17) % MAX, 0))
+                ops.append(('INT', int(op, 17) % MAX))
             elif re.fullmatch(r'\+', op):
-                ops.append(('ADD', op, 0))
+                ops.append(('ADD', op))
             elif re.fullmatch(r'\-', op):
-                ops.append(('SUB', op, 0))
+                ops.append(('SUB', op))
             elif re.fullmatch(r'\*', op):
-                ops.append(('MUL', op, 0))
+                ops.append(('MUL', op))
             elif re.fullmatch(r'\/', op):
-                ops.append(('DIV', op, 0))
+                ops.append(('DIV', op))
             elif re.fullmatch(r'\@', op):
-                ops.append(('STORE', op, 0))
+                ops.append(('STORE', op))
             elif re.fullmatch(r'\#', op):
-                ops.append(('LOAD', op, 0))
+                ops.append(('LOAD', op))
             elif re.fullmatch(r':', op):
-                ops.append(('DUP', op, 0))
+                ops.append(('DUP', op))
             elif re.fullmatch(r'==', op):
-                ops.append(('EQ', op, 0))
+                ops.append(('EQ', op))
             elif re.fullmatch(r'!', op):
-                ops.append(('NT', op, 0))
+                ops.append(('NT', op))
             elif re.fullmatch(r'>', op):
-                ops.append(('GREATER', op, 0))
+                ops.append(('GREATER', op))
             elif re.fullmatch(r'<', op):
-                ops.append(('LESS', op, 0))
+                ops.append(('LESS', op))
             elif re.fullmatch(r'\%', op):
-                ops.append(('MOD', op, 0))
+                ops.append(('MOD', op))
             elif re.fullmatch(r'I', op):
-                ops.append(('INPUT', op, 0))
+                ops.append(('INPUT', op))
             elif re.fullmatch(r'\$', op):
-                ops.append(('OUTPUT', op, 0))
+                ops.append(('OUTPUT', op))
             elif re.fullmatch(r'\$\$', op):
-                ops.append(('OUTPUT_NUM', op, 0))
+                ops.append(('OUTPUT_NUM', op))
             else:
                 print('Unknown OP:', op)
         if ops:
@@ -69,6 +70,10 @@ def main():
     with open(args.file) as file:
         code = file.read()
     ast = parse(code)
+    result = verify.verify_stack_size(ast, MAX)
+    if result:
+        print('Not enought items in stack for op (%s) in function %s' % result)
+        exit(1)
     print('Parsed')
     ast = optimize.optimize(ast, MAX, args.optimize)
     print('Optimized')
