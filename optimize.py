@@ -195,10 +195,10 @@ def dead_code_elimination(ast, MAX):
     return ast
 
 
-def optimize(ast, MAX, OPTIMIZE):
+def optimize(ast, MAX, OPTIMIZE, logger):
     for r in range(1000):
-        print('Round: %s Instructions: %s'
-              % (r, sum([len(ast[i]) for i in ast])))
+        logger.info('Round: %s Instructions: %s'
+                    % (r, sum([len(ast[i]) for i in ast])))
         old = str(ast)
         if OPTIMIZE >= 3:
             ast = loop_unrolling(ast, MAX)

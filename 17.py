@@ -1,10 +1,10 @@
 import argparse
 import re
 
-import to_javascript
 import to_python
 import optimize
 import verify
+import logger
 
 FUNCTIONS = '([0-9a-g]+) ?{([^}]*)}'
 MAX = 2**64
@@ -66,25 +66,27 @@ def main():
     parser.add_argument('-t', '--target', help='Target language',
                         default='python')
     parser.add_argument('-O', '--optimize', type=int, default=1)
+    parser.add_argument('-v', '--verbose', type=int, default=0)
     args = parser.parse_args()
+    LOGGER = logger.Logger(level=args.verbose)
     with open(args.file) as file:
         code = file.read()
     ast = parse(code)
-    result = verify.verify_stack_size(ast, MAX)
+    LOGGER.info('Parsed')
+    result = verify.verify_stack_size(ast, MAX, LOGGER)
     if result:
-        print('Not enought items in stack for op (%s) in function %s' % result)
+        LOGGER.error('Not enought items in stack for op (%s) in function %s'
+                     % result)
         exit(1)
-    print('Parsed')
-    ast = optimize.optimize(ast, MAX, args.optimize)
-    print('Optimized')
+    LOGGER.info('Verified')
+    ast = optimize.optimize(ast, MAX, args.optimize, LOGGER)
+    LOGGER.info('Optimized')
     if args.target == 'python':
-        output = to_python.to_python(ast, MAX, args.optimize)
-    elif args.target == 'js':
-        output = to_javascript.to_javascript(ast, MAX)
+        output = to_python.to_python(ast, MAX, args.optimize, LOGGER)
     else:
-        print('Unknown language')
-        return
-    print('Compiled')
+        LOGGER.error('Unknown language')
+        exit(1)
+    LOGGER.info('Compiled')
     with open(args.output, 'w') as file:
         file.write(output)
 

@@ -1,4 +1,4 @@
-def to_python(ast, MAX, OPTIMIZE, size=17**3):
+def to_python(ast, MAX, OPTIMIZE, logger, size=17**3):
     code = '''
 from array import array
 import sys
@@ -39,7 +39,6 @@ mem = InfVector()
 mem.set(0, int('777', 17))
 while True:
     name = mem.get(0)
-    del stack[:]
     '''.replace('SIZE', str(size))
     for name in ast:
         code += 'if name == %s:\n' % name
@@ -145,7 +144,7 @@ while True:
                 else:
                     code += '{t}print(stack.pop(-1), end="")\n'
             else:
-                print('Unknown op_type:', op_type)
+                logger.warning('Unknown op_type:', op_type)
         code += '    el'
     code += 'se:\n        break'  
     return code.format(MAX=MAX, t=' ' * 8)

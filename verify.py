@@ -16,7 +16,7 @@ EFFECT = {'INT':(0,0),
           'OUTPUT_NUM':(1,0)
         }
 
-def verify_stack_size(ast, MAX):
+def verify_stack_size(ast, MAX, logger):
     for name in ast:
         stack = 0
         for op_type, op in ast[name]:
@@ -29,4 +29,6 @@ def verify_stack_size(ast, MAX):
                 stack += EFFECT[op_type][1]
             else:
                 return op_type, name
-            print(name, op_type, stack)
+        if stack != 0:
+            logger.warning('Stack not empty at end of function %s, '
+                           'could cause memory leak' % name)
