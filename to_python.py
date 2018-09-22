@@ -43,8 +43,8 @@ while True:
     for name in ast:
         code += 'if name == %s:\n' % name
         for op_type, op in ast[name]:
-            if not OPTIMIZE:
-                code += '\n{t}# (%s, %s, %s)\n' % (op_type, op) 
+            if OPTIMIZE < 2:
+                code += '\n{t}# (%s, %s)\n' % (op_type, op) 
             if op_type == 'INT':
                 code += '{t}stack.append(%s)\n' % op
             elif op_type == 'ADD':
