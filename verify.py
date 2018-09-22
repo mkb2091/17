@@ -22,7 +22,7 @@ def verify_stack_size(ast, MAX, logger):
         for op_type, op in ast[name]:
             if isinstance(op, int):
                 stack += 1
-            elif isinstance(op, list):
+            elif isinstance(op, (list, tuple)):
                 stack += len(op)
             stack -= EFFECT[op_type][0]
             if stack >= 0:
