@@ -16,7 +16,6 @@ class InfVector:
 
     def set(self, key, value):
         new_key = key // SIZE
-        value %= {MAX}
         if new_key in self.data:
             if value == 17:
                 if self.data[new_key][1][key % SIZE] != 17:
