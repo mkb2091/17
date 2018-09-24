@@ -1,6 +1,7 @@
 import argparse
 import re
 
+import bf_to_17
 import to_python
 import optimize
 import verify
@@ -63,6 +64,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('file', help='Code file for 17')
     parser.add_argument('-o', '--output', default='output')
+    parser.add_argument('-i', '--input', default='17', help='Input language')
     parser.add_argument('-t', '--target', help='Target language',
                         default='python')
     parser.add_argument('-O', '--optimize', type=int, default=1)
@@ -71,7 +73,10 @@ def main():
     LOGGER = logger.Logger(level=args.verbose)
     with open(args.file) as file:
         code = file.read()
-    ast = parse(code)
+    if args.input == '17':
+        ast = parse(code)
+    elif args.input == 'bf':
+        ast = bf_to_17.bf_to_17(code, MAX=MAX)
     LOGGER.info('Parsed')
     result = verify.verify_stack_size(ast, MAX, LOGGER)
     if result:
