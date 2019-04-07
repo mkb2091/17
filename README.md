@@ -30,10 +30,16 @@ Base 17 number: Pushes it to the stack.
 
 \: : Duplicates top number on stack
 
-== : If top two numbers are equal pushes 1, else 0
-! : If top > 0 pushes 1, else 0
-> : If second from top > top
-< : If second from top < top
-% : Second from top mod top
+\=\= : If top two numbers are equal pushes 1, else 0
+
+\! : If top > 0 pushes 1, else 0
+
+\> : If second from top > top
+
+\< : If second from top < top
+
+\% : Second from top mod top
+
 \$ : Prints chr(top)
+
 \$\$ : Prints number form of top
